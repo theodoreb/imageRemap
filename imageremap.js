@@ -69,13 +69,12 @@ var imageRemap;
       // pour que l'on fasse référence à la bonne valeur dans map()
       ratio = this;
 
-      // on crée un nouveau tableau contenant les bonnes coordonnées avec map()
-      coords = coords.map(function (composante) {
-        // petite feinte : "composante" est une chaine qu'il faut convertir en nombre
-        // pour pouvoir faire des opérations dessus. on arrondi le résultat puisque
-        // les fractions de pixel n'ont pas de sens en HTML.
-        return Math.round(parseInt(composante, 10) * ratio);
-      });
+    // on crée un nouveau tableau contenant les bonnes coordonnées avec map()
+    // ici on prend en compte un changement de ratio x/y
+    for (var i = 0, n = coords.length; i < n; i += 2) {
+      coords[i] = Math.round(parseInt(coords[i], 10) * ratio.x);
+      coords[i + 1] = Math.round(parseInt(coords[i + 1], 10) * ratio.y);
+    }
 
     // on met toutes les coordonnées à jour d'un coup
     // ce n'est pas obligatoire mais ça limite le risque de problème
@@ -91,8 +90,12 @@ var imageRemap;
     var
       // le ratio de redimensionnement
       // on est sûr que naturalWidth existe pour tout le monde
-      // puisque ratio hauteur = ratio largeur, on ne calcule qu'une fois
-      ratio = img.clientWidth / img.naturalWidth,
+      // on calcule séparément ratio hauteur et ratio largeur, des fois qu'on
+      // redimensionne l'image à la Rache™.
+      ratio = {
+        x: img.clientWidth / img.naturalWidth,
+        y: img.clientHeight / img.naturalHeight
+      };
 
       // on récupère notre imagemap en utilisant son id
       imagemap = document.getElementById(img.getAttribute("usemap").replace('#', ''));
